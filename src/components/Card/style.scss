@@ -1,0 +1,28 @@
+@use "../../global-styles" as g;
+
+/* stylelint-disable */
+.Card {
+
+  .Card__content {
+    box-sizing: border-box;
+
+    &,
+    * {
+      @extend .overflow-hidden;
+
+      @extend .text-overflow-ellipsis;
+
+      @extend .white-space-nowrap;
+    }
+  }
+
+  @include g.min-width(g.$md) {
+
+    .Card__thumbnail {
+
+      img {
+        object-fit: contain;
+      }
+    }
+  }
+}

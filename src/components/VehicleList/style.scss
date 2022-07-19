@@ -1,3 +1,23 @@
+@use "../../global-styles";
+
 .VehicleList {
-  width: 100%;
+
+  .VehicleList__item {
+    margin-left: -1px;
+    margin-top: -1px;
+
+/* stylelint-disable */
+    &:last-child {
+      @extend .border-none;
+    }
+
+    &:nth-child(odd) {
+      @extend .md\:border-right-1;
+    }
+
+    &:nth-child(4n) {
+      @extend .lg\:border-none;
+    }
+  }
+  /* stylelint-enable */
 }

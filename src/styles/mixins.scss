@@ -1,0 +1,227 @@
+@use "sass:math";
+
+/* stylelint-disable */
+@mixin style-class($prop, $map, $responsive: false, $states: false) {
+  @each $key, $val in $map {
+    .#{$prefix}#{$key} {
+      #{$prop}: #{$val} !important;
+    }
+  }
+
+  @if ($states) {
+    @each $key, $val in $map {
+      .focus#{$separator} {
+        &#{$prefix}#{$key}:focus {
+          #{$prop}: #{$val} !important;
+        }
+      }
+
+      .hover#{$separator} {
+        &#{$prefix}#{$key}:hover {
+          #{$prop}: #{$val} !important;
+        }
+      }
+
+      .active#{$separator} {
+        &#{$prefix}#{$key}:active {
+          #{$prop}: #{$val} !important;
+        }
+      }
+    }
+  }
+
+  @if ($responsive) {
+    @each $key, $val in $breakpoints {
+      @media screen and (min-width: #{$val}) {
+        .#{$key + $separator} {
+          @each $key, $val in $map {
+            &#{$prefix}#{$key} {
+              #{$prop}: #{$val} !important;
+            }
+          }
+
+          @if ($states) {
+            @each $key, $val in $map {
+              &focus#{$separator} {
+                &#{$prefix}#{$key}:focus {
+                  #{$prop}: #{$val} !important;
+                }
+              }
+
+              &hover#{$separator} {
+                &#{$prefix}#{$key}:hover {
+                  #{$prop}: #{$val} !important;
+                }
+              }
+
+              &active#{$separator} {
+                &#{$prefix}#{$key}:active {
+                  #{$prop}: #{$val} !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin surface-class($name, $prop, $shades) {
+  @each $shade in $shades {
+    .#{$prefix}#{$name}-#{$shade} {
+      #{$prop}: var(--surface-#{$shade}) !important;
+    }
+  }
+
+  @each $shade in $shades {
+    .focus#{$separator} {
+      &#{$prefix}#{$name}-#{$shade}:focus {
+        #{$prop}: var(--surface-#{$shade}) !important;
+      }
+    }
+
+    .hover#{$separator} {
+      &#{$prefix}#{$name}-#{$shade}:hover {
+        #{$prop}: var(--surface-#{$shade}) !important;
+      }
+    }
+
+    .active#{$separator} {
+      &#{$prefix}#{$name}-#{$shade}:active {
+        #{$prop}: var(--surface-#{$shade}) !important;
+      }
+    }
+  }
+}
+
+@mixin border-class($name, $directions, $scales) {
+  @each $dir, $prop in $directions {
+    @for $i from 0 through length($scales) - 1 {
+      $borderValue: if($i == 0, "none", $i);
+      $className: #{$name}-#{$dir}-#{$borderValue};
+
+      @if ($dir == "") {
+        $className: #{$name}-#{$borderValue};
+      }
+
+      .#{$prefix}#{$className} {
+        @each $propName in $prop {
+          #{$propName}-width: nth($scales, $i + 1) !important;
+          #{$propName}-style: if($i == 0, none, solid);
+        }
+      }
+    }
+  }
+
+  @each $key, $val in $breakpoints {
+    @media screen and (min-width: #{$val}) {
+      .#{$key + $separator} {
+        @each $dir, $prop in $directions {
+          @for $i from 0 through length($scales) - 1 {
+            $borderValue: if($i == 0, "none", $i);
+            $className: #{$name}-#{$dir}-#{$borderValue};
+
+            @if ($dir == "") {
+              $className: #{$name}-#{$borderValue};
+            }
+
+            &#{$prefix}#{$className} {
+              @each $propName in $prop {
+                #{$propName}-width: nth(
+                  $scales,
+                  $i + 1
+                ) !important;
+                #{$propName}-style: if($i == 0, none, solid);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin spacing-class(
+  $inPrefix,
+  $map,
+  $scales,
+  $responsive: true,
+    $auto: false,
+    $negative: false
+) {
+  $inPrefix: $prefix + $inPrefix;
+
+  @each $name, $prop in $map {
+    @for $i from 0 through length($scales) - 1 {
+      .#{$inPrefix}#{$name}-#{$i} {
+        @each $propName in $prop {
+          #{$propName}: $spacer * nth($scales, $i + 1) !important;
+        }
+      }
+    }
+
+    @if ($negative) {
+      @for $i from 1 through length($scales) - 1 {
+        .-#{$inPrefix}#{$name}-#{$i} {
+          @each $propName in $prop {
+            #{$propName}: -1 *
+              $spacer *
+              nth($scales, $i + 1) !important;
+          }
+        }
+      }
+    }
+
+    @if ($auto) {
+      .#{$inPrefix}#{$name}-auto {
+        @each $propName in $prop {
+          #{$propName}: auto !important;
+        }
+      }
+    }
+  }
+
+  @if ($responsive) {
+    @each $key, $val in $breakpoints {
+      @media screen and (min-width: #{$val}) {
+        @each $name, $prop in $map {
+          @for $i from 0 through length($scales) - 1 {
+            .#{$key + $separator}#{$inPrefix}#{$name}-#{$i} {
+              @each $propName in $prop {
+                #{$propName}: $spacer *
+                  nth($scales, $i + 1) !important;
+              }
+            }
+          }
+
+          @if ($negative) {
+            @for $i from 1 through length($scales) - 1 {
+              .#{$key + $separator}-#{$inPrefix}#{$name}-#{$i} {
+                @each $propName in $prop {
+                  #{$propName}: -1 *
+                    $spacer *
+                    nth($scales, $i + 1) !important;
+                }
+              }
+            }
+          }
+
+          @if ($auto) {
+            .#{$key + $separator}#{$inPrefix}#{$name}-auto {
+              @each $propName in $prop {
+                #{$propName}: auto !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin min-width($val) {
+  @media screen and (min-width: $val) {
+    @content;
+  }
+}

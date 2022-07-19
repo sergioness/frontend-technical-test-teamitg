@@ -1,5 +1,67 @@
+@use "sass:math";
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@300&display=swap");
+
+:root {
+  --font-family: "Archivo", sans-serif;
+  --text-color: #495057;
+  --text-color-secondary: #6c757d;
+  --primary-color: #1c0020;
+  --primary-color-text: #ffffff;
+  --surface-0: #ffffff;
+  --surface-50: #f3f2f1;
+  --surface-100: #e1dfdd;
+  --surface-200: #bebbb8;
+  --surface-300: #a19f9d;
+  --surface-400: #797775;
+  --surface-500: #484644;
+  --surface-600: #323130;
+  --surface-700: #252423;
+  --surface-800: #1b1a19;
+  --surface-900: #11100f;
+}
+
 .root {
+  color: var(--text-color);
+  font-family: var(--font-family);
   margin: 14px;
   padding: 12px;
   z-index: 12;
 }
+
+$prefix: "" !default;
+$separator: "\\:" !default;
+$spacer: 1rem !default;
+$surfaceShades: 0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900;
+
+$sm: 576px !default;
+$md: 768px !default;
+$lg: 992px !default;
+$xl: 1200px !default;
+
+$breakpoints: (
+  "sm": $sm,
+  "md": $md,
+  "lg": $lg,
+  "xl": $xl
+) !default;
+
+@import "./styles/mixins";
+
+@import "./styles/borders";
+
+@import "./styles/display";
+
+@import "./styles/flexbox";
+
+@import "./styles/font";
+
+@import "./styles/sizes";
+
+@import "./styles/spacing";
+
+@import "./styles/overflow";
+
+@include surface-class("border", "border-color", $surfaceShades);
+
+@include surface-class("text", "color", $surfaceShades);

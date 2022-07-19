@@ -1,4 +1,4 @@
-import getData from '..';
+import getData, { updateMedia, appendQueryFromUrl } from '../index';
 import { request } from '../helpers';
 
 jest.mock('../helpers');
@@ -57,5 +57,57 @@ describe.skip('getData Tests', () => {
     return expect(safelyCallApi()).resolves.toEqual([
       { apiUrl: '/api/xj.json', id: 'xj', price: '£40,000' }
     ]);
+  });
+});
+
+describe('updateMedia Tests', () => {
+  it('Should return Promise', async () => {
+    let value = 10;
+    expect(await updateMedia(value)).toEqual(value);
+    value = null;
+    expect(await updateMedia(Promise.resolve(value))).toEqual(value);
+  });
+  it('Should not update media if there is nothing to', async () => {
+    expect(await updateMedia(Promise.resolve({}))).not.toHaveProperty('media');
+    let media = null;
+    expect(await updateMedia(Promise.resolve({ media }))).toHaveProperty('media', media);
+    media = [];
+    expect(await updateMedia(Promise.resolve({ media }))).toHaveProperty('media', media);
+  });
+  it('Should update media object', async () => {
+    const media = [{ url: '' }];
+    const mediafull = await updateMedia(Promise.resolve({ media }));
+    expect(mediafull).toHaveProperty('media');
+    expect(mediafull.media).toHaveLength(media.length);
+  });
+});
+
+describe('appendQueryFromUrl Tests', () => {
+  const lookupMap = {
+    '10x10': 'ten', hi: 'hello', 10: '10', '/lg/': 'full'
+  };
+  const baseline = '';
+  it('Should set \'query\' property to empty string if no value is looked up', () => {
+    let regex = /\d+x\d+/g;
+    expect(appendQueryFromUrl({}, regex, lookupMap))
+      .toHaveProperty('query', baseline);
+    expect(appendQueryFromUrl({ url: '' }, regex, lookupMap))
+      .toHaveProperty('query', baseline);
+    expect(appendQueryFromUrl({ url: '123' }, regex, lookupMap))
+      .toHaveProperty('query', baseline);
+    regex = /\d+/;
+    expect(appendQueryFromUrl({ url: 'api/xl/1234/10' }, regex, lookupMap))
+      .toHaveProperty('query', '');
+  });
+  it('Should set \'query\' property to a looked up value ', () => {
+    let regex = /\d+x\d+/g;
+    expect(appendQueryFromUrl({ url: '10x10x10' }, regex, lookupMap))
+      .toHaveProperty('query', lookupMap['10x10']);
+    regex = /\d+/;
+    expect(appendQueryFromUrl({ url: '10x10x10' }, regex, lookupMap))
+      .toHaveProperty('query', lookupMap[10]);
+    regex = /\/\w+\//;
+    expect(appendQueryFromUrl({ url: 'http://api.image.com/lg/10/1234' }, regex, lookupMap))
+      .toHaveProperty('query', lookupMap['/lg/']);
   });
 });
